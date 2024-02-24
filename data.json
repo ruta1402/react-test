@@ -1,1 +1,11 @@
-{}
+[
+    {
+      "field1": "Value 1",
+      "field2": "Value 2"
+    },
+    {
+      "field1": "Value 3",
+      "field2": "Value 4"
+    }
+  ]
+  
