@@ -10,7 +10,10 @@ interface Props {
 
 const RulesTable: React.FC<Props> = ({ rules, onEdit, onDelete }) => {
   return (
+    <div>
+    <h1>Rules Table</h1>
     <table>
+      
       <thead>
         <tr>
           <th>Name</th>
@@ -33,6 +36,7 @@ const RulesTable: React.FC<Props> = ({ rules, onEdit, onDelete }) => {
         ))}
       </tbody>
     </table>
+    </div>
   );
 };
 

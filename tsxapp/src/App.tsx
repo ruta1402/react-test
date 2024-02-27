@@ -8,14 +8,30 @@ import { Rule } from './components/types';
 const App: React.FC = () => {
   const [rules, setRules] = useState<Rule[]>([]);
   const [selectedRule, setSelectedRule] = useState<Rule | null>(null);
+  const [showAddRule, setShowAddRule] = useState<boolean>(false); // State variable to control visibility of AddRule component
 
   useEffect(() => {
     // Fetch rules.json or load it from wherever it's stored
     // Example fetch:
-    fetch('/rules.json')
-      .then(response => response.json())
-      .then(data => setRules(data))
-      .catch(error => console.error('Error fetching rules.json:', error));
+    const data = [
+      {
+        "name": "rule1",
+        "type": "type1",
+        "value": "value1"
+      },
+      {
+        "name": "rule2",
+        "type": "type2",
+        "value": "value2"
+      },
+      {
+        "name": "rule3",
+        "type": "type3",
+        "value": "value3"
+      }
+    ];
+
+    setRules(data);
   }, []);
 
   const handleRuleEdit = (rule: Rule) => {
@@ -24,6 +40,7 @@ const App: React.FC = () => {
 
   const handleRuleAdd = (newRule: Rule) => {
     setRules([...rules, newRule]);
+    setShowAddRule(false); // Hide AddRule component after adding a rule
   };
 
   const handleRuleSave = (updatedRule: Rule) => {
@@ -56,7 +73,7 @@ const App: React.FC = () => {
 
   return (
     <div>
-      <h1>Rules Table</h1>
+      
       <button onClick={handleExportRules}>Export Rules</button>
       <RulesTable
         rules={rules}
@@ -66,7 +83,10 @@ const App: React.FC = () => {
       {selectedRule && (
         <EditRule rule={selectedRule} onSave={handleRuleSave} />
       )}
-      <AddRule onAdd={handleRuleAdd} />
+      {/* Render AddRule component only if showAddRule is true */}
+      {showAddRule && <AddRule onAdd={handleRuleAdd} />}
+      {/* Button to toggle the visibility of AddRule component */}
+      <button onClick={() => setShowAddRule(!showAddRule)}>Add Rule</button>
     </div>
   );
 };
