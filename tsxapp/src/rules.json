@@ -1,0 +1,18 @@
+[
+    {
+      "name": "rule1",
+      "type": "type1",
+      "value": "value1"
+    },
+    {
+      "name": "rule2",
+      "type": "type2",
+      "value": "value2"
+    },
+    {
+      "name": "rule3",
+      "type": "type3",
+      "value": "value3"
+    }
+  ]
+  
