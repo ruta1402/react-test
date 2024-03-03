@@ -1,0 +1,168 @@
+// App.tsx
+import React, { useState, useEffect } from 'react';
+import RulesTable from './RulesTable';
+import EditRule from './EditRule';
+import AddRule from './AddRule';
+import { type Rule } from './types';
+import { MdsButton } from '@mds/web-ui-button';
+import '@mds/web-ui-button/styles';
+import {MdsIconAdd, MdsIconCake, MdsIconClose, MdsIconDownload, MdsIconEditNote} from '@mds/web-ui-icons';
+import '@mds/web-ui-icons/styles';
+import {MdsLayout, MdsLayoutItem} from '@mds/web-ui-layout';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import {Link, Route, Routes, useNavigate} from 'react-router-dom';
+import axios from 'axios';
+import Test from './Test';
+import JSONRules from './JSONRules';
+import {Modal, ModalBody, ModalFooter, ModalHeader} from 'reactstrap';
+
+
+const Main: React.FC = () => {
+    const [rules, setRules] = useState<Rule[]>([]);
+    const [selectedRule, setSelectedRule] = useState<Rule | null>(null);
+    const [showAddRule, setShowAddRule] = useState<boolean>(false); // State variable to control visibility of AddRule component
+    const [jsonRules,setJsonRules]=useState("");
+    const[mainModal,setMainModal]=useState(false);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const data = [
+            {
+                id:1,
+                ruleName: "name1",
+                ruleType: "inclusion",
+                matchValue: ["value1","value2","value3","value4","value5"],
+                matchCriteria: "path",
+                trafficPercentage: 0,
+                albFormat:"api2_qa01_agg_?_lb",
+                tagetALBName: "api2_qa01_agg_0_lb",
+            },
+            {
+                id:2,
+                ruleName: "name2",
+                ruleType: "inclusion",
+                matchValue: ["value1","value2"],
+                matchCriteria: "path",
+                trafficPercentage: 0,
+                albFormat:"api2_qa01_agg_?_lb",
+                tagetALBName: "api2_qa01_agg_0_lb",
+            }
+        ];
+
+
+        setRules(data);
+    }, [mainModal]);
+
+    const handleRuleEdit = (rule: Rule) => {
+        setSelectedRule(rule);
+        setMainModal(prevState => true);
+
+    };
+
+    const handleAddClick=()=>{
+        setShowAddRule(!showAddRule);
+        setMainModal(prevState => true);
+    }
+
+
+    const handleRuleAdd = (newRule: Rule) => {
+        setRules(prevState=>[...rules, newRule]);
+        setShowAddRule(prevState=>false); // Hide AddRule component after adding a rule
+        //toggleModal();
+    };
+
+    const toggleModal=()=>{
+        setMainModal(prevState => false);
+    }
+
+    const handleRuleSave = (updatedRule: Rule) => {
+        const updatedRules = rules.map(rule =>
+            rule.ruleName === updatedRule.ruleName ? updatedRule : rule
+        );
+        setRules(updatedRules);
+        setSelectedRule(null);
+        //toggleModal();
+    };
+
+    const handleRuleDelete = (name: string) => {
+        const updatedRules = rules.filter(rule => rule.ruleName !== name);
+        setRules(updatedRules);
+    };
+
+    const handleExportRules = () => {
+
+        setMainModal(prevState => true);
+        // Convert rules to JSON and export
+        const json = JSON.stringify(rules,null,2);
+        setJsonRules(prevState => json);
+        // Example code to initiate file download
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'rules.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+
+    return (
+        <div className='container-fluid'>
+
+
+            <div className='container-fluid'>
+
+                <div className='navbar navbar-expand-lg justify-content-end mb-4'>
+                    <div className='navbar-nav ml-auto'>
+                        <li className='nav-item'>
+                            <MdsButton variant="secondary" size="regular" text="Add Rule"
+                                icon={<MdsIconAdd aria-hidden />}
+                                onClick={handleAddClick}></MdsButton>
+                        </li>
+                        <li className='nav-item'>
+                            <MdsButton variant="primary" size="regular" text="Export Rules"
+                                icon={<MdsIconDownload aria-hidden />} onClick={handleExportRules}></MdsButton>
+                        </li>
+                    </div>
+                </div>
+                <div className='row justify-content-center mb-4'>
+                    <RulesTable rules={rules} onEdit={handleRuleEdit} onDelete={handleRuleDelete} />
+                </div>
+
+            </div>
+
+            {/*{selectedRule && (<EditRule rule={selectedRule} onSave={handleRuleSave} />)}*/}
+
+            {/*{showAddRule && <AddRule onAdd={handleRuleAdd} />}*/}
+
+            {/*{jsonRules && <JSONRules jsonRules={jsonRules}/>}*/}
+
+            {mainModal &&
+              <Modal isOpen={mainModal} backdrop={true} size='lg'>
+                <ModalHeader>
+                  <MdsButton text="" variant="tertiary" icon={<MdsIconClose aria-hidden size='large' color='interactive' />}></MdsButton>
+                </ModalHeader>
+                <ModalBody>
+                  <div className="form-group row justify-content-center">
+                      {selectedRule && (<EditRule rule={selectedRule} onSave={handleRuleSave} />)}
+
+                      {showAddRule && <AddRule onAdd={handleRuleAdd} />}
+
+                      {jsonRules && <JSONRules jsonRules={jsonRules}/>}
+                  </div>
+                </ModalBody>
+                <ModalFooter>
+                  <hr/>
+                </ModalFooter>
+              </Modal>
+            }
+
+
+
+
+        </div>
+    );
+};
+
+export default Main;
