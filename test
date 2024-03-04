@@ -1,11 +1,81 @@
- <Modal isOpen={mainModal} toggle={toggleModal} >
-                <ModalHeader toggle={toggleModal}>Modal title</ModalHeader>
-                <ModalBody>
-                    {selectedRule && (<EditRule rule={selectedRule} onSave={handleRuleSave} />)}
-                    {showAddRule && <AddRule onAdd={handleRuleAdd} />}
-                    {jsonRules && <JSONRules jsonRules={jsonRules}/>}
-                </ModalBody>
-                <ModalFooter>
+import React, { useState } from 'react';
 
-                </ModalFooter>
-            </Modal>
+const TableComponent = ({ data }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  // Filtered data based on search query
+  const filteredData = data.filter(item => 
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return (
+    <div>
+      {/* Search input */}
+      <input
+        type="text"
+        placeholder="Search..."
+        value={searchQuery}
+        onChange={handleSearchChange}
+      />
+      
+      {/* Table */}
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {/* Display filtered rows */}
+          {filteredData.map(item => (
+            <tr key={item.id}>
+              <td>{item.name}</td>
+              <td>{item.description}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default TableComponent;
+
+
+
+
+import React, { useEffect, useState } from 'react';
+
+const Main: React.FC = () => {
+  const [rules, setRules] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchRules = async () => {
+      try {
+        const response = await fetch('/components/rules.json');
+        const data = await response.json();
+        setRules(data);
+      } catch (error) {
+        console.error('Error fetching rules:', error);
+      }
+    };
+
+    fetchRules();
+  }, []);
+
+  return (
+    <div>
+      {rules && (
+        <pre>{JSON.stringify(rules, null, 2)}</pre>
+      )}
+    </div>
+  );
+};
+
+export default Main;
+
