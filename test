@@ -30,6 +30,32 @@ const FolderSelector = () => {
       />
     </div>
   );
+
+
+async function getSubfolders() {
+  try {
+    const dirHandle = await window.showDirectoryPicker();
+    const dirEntries = await dirHandle.values();
+
+    // Filter out subdirectories
+    const subfolders = [];
+    for await (const entry of dirEntries) {
+      if (entry.kind === 'directory') {
+        subfolders.push(entry.name);
+      }
+    }
+
+    console.log('Subfolders:', subfolders);
+    return subfolders;
+  } catch (error) {
+    console.error('Error accessing directory:', error);
+    return [];
+  }
+}
+
+getSubfolders();
+
+
 };
 
 export default FolderSelector;
