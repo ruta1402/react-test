@@ -76,6 +76,43 @@ public ResponseEntity<byte[]> getFile(@PathVariable String filePath) {
         return ResponseEntity.notFound().build();
     }
 }
+import React, { useState } from 'react';
+
+function FileComponent() {
+    const [fileContent, setFileContent] = useState('');
+    const [filePath, setFilePath] = useState('');
+
+    const fetchFile = () => {
+        fetch(`http://localhost:8080/file?filePath=${encodeURIComponent(filePath)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(data => {
+                setFileContent(data);
+            })
+            .catch(error => {
+                console.error('Error fetching file:', error);
+            });
+    };
+
+    return (
+        <div>
+            <input 
+                type="text" 
+                value={filePath} 
+                onChange={e => setFilePath(e.target.value)} 
+                placeholder="Enter file path"
+            />
+            <button onClick={fetchFile}>Fetch File</button>
+            <div>{fileContent}</div>
+        </div>
+    );
+}
+
+export default FileComponent;
 
 
 
