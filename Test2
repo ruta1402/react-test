@@ -1,0 +1,78 @@
+import React, { useState } from 'react';
+
+function FileComponent() {
+    const [fileContent, setFileContent] = useState('');
+    const [filePath, setFilePath] = useState('');
+    const [cloudletKeys, setCloudletKeys] = useState([]);
+    const [policyKeys, setPolicyKeys] = useState([]);
+    const [defaultKeys, setDefaultKeys] = useState([]);
+
+    const fetchFile = () => {
+        fetch(`http://localhost:8080/file?filePath=${encodeURIComponent(filePath)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json(); // Parse response as JSON
+            })
+            .then(data => {
+                setFileContent(data); // Set the file content
+                if (data.Cloudlet) {
+                    const cloudletKeys = Object.keys(data.Cloudlet); // Get the keys of the 'Cloudlet' object
+                    setCloudletKeys(cloudletKeys); // Update state with the keys
+
+                    if (data.Cloudlet.Policy) {
+                        const policyKeys = Object.keys(data.Cloudlet.Policy); // Get the keys of the 'Policy' object
+                        setPolicyKeys(policyKeys); // Update state with the keys
+
+                        if (data.Cloudlet.Policy.Default) {
+                            const defaultKeys = Object.keys(data.Cloudlet.Policy.Default); // Get the keys of the 'Default' object
+                            setDefaultKeys(defaultKeys); // Update state with the keys
+                        }
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching file:', error);
+            });
+    };
+
+    return (
+        <div>
+            <input 
+                type="text" 
+                value={filePath} 
+                onChange={e => setFilePath(e.target.value)} 
+                placeholder="Enter file path"
+            />
+            <button onClick={fetchFile}>Fetch File</button>
+            <div>{fileContent}</div>
+            <div>
+                <h2>Cloudlet Keys:</h2>
+                <ul>
+                    {cloudletKeys.map(key => (
+                        <li key={key}>{key}</li>
+                    ))}
+                </ul>
+            </div>
+            <div>
+                <h2>Policy Keys:</h2>
+                <ul>
+                    {policyKeys.map(key => (
+                        <li key={key}>{key}</li>
+                    ))}
+                </ul>
+            </div>
+            <div>
+                <h2>Default Keys:</h2>
+                <ul>
+                    {defaultKeys.map(key => (
+                        <li key={key}>{key}</li>
+                    ))}
+                </ul>
+            </div>
+        </div>
+    );
+}
+
+export default FileComponent;
