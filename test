@@ -1,3 +1,43 @@
+import React, { useState } from 'react';
+
+const TableComponent = ({ data }) => {
+  const [sortedData, setSortedData] = useState(data);
+  const [sortDirection, setSortDirection] = useState(null);
+
+  const handleSort = () => {
+    const direction = sortDirection === 'asc' ? 'desc' : 'asc';
+    const sorted = [...sortedData].sort((a, b) => {
+      return direction === 'asc' ? a.rulePercent - b.rulePercent : b.rulePercent - a.rulePercent;
+    });
+    setSortedData(sorted);
+    setSortDirection(direction);
+  };
+
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Rule Type</th>
+          <th onClick={handleSort}>Rule Percent</th>
+          <th>Rule Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        {sortedData.map((row, index) => (
+          <tr key={index}>
+            <td>{row.ruleType}</td>
+            <td>{row.rulePercent}</td>
+            <td>{row.ruleName}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+};
+
+export default TableComponent;
+
+
 import React from 'react';
 
 const FolderSelector = () => {
