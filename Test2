@@ -1,3 +1,55 @@
+// RulesTable.js
+import React, { useState } from 'react';
+
+const RulesTable = ({ rules }) => {
+  const [sortedRules, setSortedRules] = useState([...rules]);
+  const [sortOrder, setSortOrder] = useState('asc');
+
+  const sortByPercent = () => {
+    const sorted = [...sortedRules].sort((a, b) => {
+      if (sortOrder === 'asc') {
+        return a.percent - b.percent;
+      } else {
+        return b.percent - a.percent;
+      }
+    });
+    setSortedRules(sorted);
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  };
+
+  return (
+    <div>
+      <h2>Rules Table</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th onClick={sortByPercent}>Percent</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedRules.map(rule => (
+            <tr key={rule.id}>
+              <td>{rule.id}</td>
+              <td>{rule.name}</td>
+              <td>{rule.percent}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default RulesTable;
+
+
+
+
+
+
+
 import React, { useState } from 'react';
 
 function FileComponent() {
